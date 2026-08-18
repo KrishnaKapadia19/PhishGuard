@@ -5,6 +5,7 @@ is_ip = True
 looks_like_ip = True
 found_suspicious = False
 risk_point = 0
+special_count=0
 
 result = urlparse(url)
 
@@ -15,6 +16,8 @@ print("Domain   :", result.netloc)
 print("Path     :", result.path)
 print("Length   :", len(url))
 print("Secure?  :", result.scheme == "https")
+
+security_part = result.path + result.netloc
 
 parts = result.netloc.split(".")
 
@@ -74,5 +77,28 @@ counter=url.count("@")
 if (counter>0) :
     print("suspicious @ detected")
     risk_point+=25
+
+if (len(parts)-2 > 2 ):
+    print("Too many subdomains")
+    risk_point+=10
+
+special_chars = ["%", "_", "-" ]
+
+for char in special_chars:
+    count =  security_part.count(char)
+    special_count+=count
+
+
+if(special_count>4) :
+    print("unusual more special cheracter are used")
+    risk_point+=20
+
+if url.count("%")>0:
+    print("URL contains encoded characters")
+    risk_point+=5
+
+if result.netloc.count("-") > 2:
+    print("Many hyphens in domain")
+    risk_point+=10
 
 print("risk point is ", risk_point)
